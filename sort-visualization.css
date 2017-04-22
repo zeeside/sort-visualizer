@@ -1,0 +1,7 @@
+#display{width:100%;border:0px solid red;margin:0;padding:0;list-style-type:none;border:0px solid red;overflow:hidden;vertical-align:bottom;}
+#display li.list-item{height:auto;color:white;width:30px;padding:2px;margin-right:5px;margin-top:auto;font:bold 14px verdana;}	
+#display li.list-item{overflow:hidden;vertical-align:bottom;display:inline-block; border:0px solid grey;}
+#display li.list-item div{background-color:black;width:100%;padding:0 10px 80px 10px;margin-top:100%;}
+#display li.list-item div span{display:inline-block;margin-top:20px;margin:20px auto 0 auto;padding-top:20px;}
+#arrayToSort{width:300px;box-sizing: border-box;border: 2px solid #ccc;border-radius: 4px;font-size: 14px;padding: 5px;-webkit-transition: width 0.4s ease-in-out;transition: width 0.4s ease-in-out;}
+#arrayToSort:focus{width:50%;}

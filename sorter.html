@@ -4,30 +4,32 @@
 <title>Sort Test</title>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="http://www.edigitsoftware.com/formbuilder-v2/scripts/jquery.tmpl.min.js"></script>
-<style>    
-	#display{width:100%;border:0px solid red;margin:0;padding:0;list-style-type:none;border:0px solid red;overflow:hidden;vertical-align:bottom;}
-	#display li.list-item{height:auto;color:white;width:30px;padding:2px;margin-right:5px;margin-top:auto;font:bold 14px verdana;}	
-	#display li.list-item{overflow:hidden;vertical-align:bottom;display:inline-block; border:0px solid grey;}
-	#display li.list-item div{background-color:black;width:100%;padding:0 10px 80px 10px;margin-top:100%;}
-	#display li.list-item div span{display:inline-block;margin-top:20px;margin:20px auto 0 auto;padding-top:20px;}
-</style>
+<link type="text/css" href="sort-visualization.css" rel="stylesheet"></style>
 </head>
 <body>
 <h1>Tests</h1>
+<input id="arrayToSort" type="text" placeholder="4,6,7,9,3,2,5,13,12,11,15,10,6,7,5" /><br/><br/>
 <button id="bubbleSort" text="Bubble Sort it" class="sorter">Bubble Sort</button> &nbsp;
 <button id="selectionSort" text="Selection Sort it" class="sorter">Selection Sort</button>&nbsp;
 <button id="insertionSort" text="Insertion Sort it" class="sorter">Insertion Sort</button>&nbsp;
 <button id="mergeSort" text="Merge Sort it" class="sorter">Merge Sort</button>&nbsp;
+
 <ul id="display">
 </ul>
 
-
+<script src="jquery.sort-visualization.js"></script>
 <script type="text/javascript">
 	
-   $(document).ready(function(){   		
-		var displayArray = [];
+   $(document).ready(function(){  
+		
+		//initialize the visualizer
+		sortVisualizer.init($('#display'));
+		
+		// default array to sort
 		var arrayToSort = [4,6,7,9,3,2,5,13,12,11,15,10,6,7,5];
 		
+		// Run Merge Sort:
+		// TODO: Modify visualization for Merge Sort 
 		function mergeSort(arr){
 			runMergeSort(arr);
 		}
@@ -47,8 +49,7 @@
 		function merge(arr1, arr2){
 			var finalArr=[];
 			
-			while(arr1.length && arr2.length){
-				
+			while(arr1.length && arr2.length){				
 				if (arr1[0] < arr2[0]){
 					finalArr[finalArr.length] = arr1.shift();					
 				}else{
@@ -64,24 +65,26 @@
 				finalArr[finalArr.length] = arr2[j];
 			}
 			
-			logState(finalArr,true);
+			sortVisualizer.logState(finalArr,true);
 			return finalArr;
 		}
 		
+		// Insertion Sort
 		function insertionSort(arr){
 			
 			for (var i=0; i<=arr.length-1; i++){				
 				var value = arr[i];
 				for(j=i; j > 0 && value < arr[j-1]; j--){
 					arr[j] = arr[j-1];										
-					logState(arr);
+					sortVisualizer.logState(arr);
 				}
 				arr[j]=value;
-				logState(arr);
+				sortVisualizer.logState(arr);
 				
 			}
 		}
 		
+		// Bubble Sort
 		function bubbleSort(arr)
 		{
 			
@@ -96,7 +99,7 @@
 					{
 						swap(arr,x,x+1);						
 						console.log(arr.toString());
-						logState(arr);
+						sortVisualizer.logState(arr);
 					}
 				}
 			}
@@ -115,78 +118,25 @@
 				}				
 				swap(arr,min,i);
 				console.log(arr.toString());
-				logState(arr);
+				sortVisualizer.logState(arr);
 			}
 		}
 		
+		// simple swap function
 		function swap(arr,indexA, indexB){
 			temp = arr[indexA];
 			arr[indexA]=arr[indexB];
 			arr[indexB]=temp;
-		}
-		
-		function clearDisplay(){
-			$('#display').empty();			
-			displayArray = [];
-		}
-		
-		function logState(arr,logToBrowser){
-			displayArray[displayArray.length]=arr.slice();
-			if (logToBrowser){
-				console.log(arr.slice().toString());
-			}
-		}
-		
-		function doDisplay() {
-			$('#display').empty();			
-			var setCount = displayArray.length;
-			for (var i = 0; i <= displayArray.length - 1; i++) {
-				var visibility = "display:none;";
-				display(displayArray[i], i, visibility);
-			}
-
-			var interval = setInterval(function() {
-				var visibleSet = $('.list-item:visible');
-				var firstVisibleElement;
-				var setNumber;
-				if (visibleSet.length == 0) {
-					firstVisibleElement = $('.set-0');
-					setNumber = 0;
-				} else {
-					firstVisibleElement = $('.list-item:visible').first();
-					setNumber = parseInt(firstVisibleElement.attr('set'));
-				}
-
-				var nextSetNumber = setNumber + 1;
-				if ($('.set-' + nextSetNumber).length > 0) {
-					$('.set-' + setNumber).remove();
-					$('.set-' + nextSetNumber).show();
-
-				} else {
-					clearInterval(interval);
-				}
-			}, 200)
-		}
-		
-		function display(arr,set,visibility){			
-			if (typeof(set) == 'undefined'){
-				set=0;
-			}
-			//$('#display').empty();
-			var innerTableFormat="<li class='list-item set-${set}' set='${set}' style='${visibility}'><div style='height:${value}0px;'><span>${value}</span></div></li>";
-			var fullCell="";
-			for (var i=0; i<=arr.length-1; i++){
-				var val=arr[i];				
-				 $.tmpl(innerTableFormat, {value:val, set:set, visibility:visibility}).appendTo('#display');
-			}
 		}		
-		
+
+		// Sort button events
 		$('.sorter').on('click', function(){			
 			try{
+				var arr = ($('#arrayToSort').val() == "") ? arrayToSort : $('#arrayToSort').val().split(',');
 				var sortFunction = $(this).attr("id");
-				clearDisplay();
-				eval(sortFunction + "([" + arrayToSort.toString()  + "])");
-				doDisplay();
+				sortVisualizer.clearDisplay();
+				eval(sortFunction + "([" + arr.toString()  + "])");
+				sortVisualizer.doDisplay();
 			}catch(e){
 				console.log(e);
 				console.log("Error executing sort function.");
